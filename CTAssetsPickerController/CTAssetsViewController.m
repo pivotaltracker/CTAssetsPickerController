@@ -301,7 +301,7 @@ NSString * const CTAssetsSupplementaryViewIdentifier = @"CTAssetsSupplementaryVi
     CTAssetsViewCell *cell =
     [collectionView dequeueReusableCellWithReuseIdentifier:CTAssetsViewCellIdentifier
                                               forIndexPath:indexPath];
-    
+    cell.delegate = self;
     ALAsset *asset = [self.assets objectAtIndex:indexPath.row];
     
     if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:shouldEnableAsset:)])
@@ -352,14 +352,16 @@ NSString * const CTAssetsSupplementaryViewIdentifier = @"CTAssetsSupplementaryVi
         return YES;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     ALAsset *asset = [self.assets objectAtIndex:indexPath.row];
     
-    [self.picker selectAsset:asset];
-    
-    if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:didSelectAsset:)])
-        [self.picker.delegate assetsPickerController:self.picker didSelectAsset:asset];
+    if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:viewControllerForAsset:)]) {
+        UIViewController *viewController = [self.picker.delegate assetsPickerController:self.picker
+                                                                 viewControllerForAsset:asset];
+        [self presentViewController:viewController
+                           animated:YES
+                         completion:nil];
+    }
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -370,16 +372,6 @@ NSString * const CTAssetsSupplementaryViewIdentifier = @"CTAssetsSupplementaryVi
         return [self.picker.delegate assetsPickerController:self.picker shouldDeselectAsset:asset];
     else
         return YES;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    ALAsset *asset = [self.assets objectAtIndex:indexPath.row];
-    
-    [self.picker deselectAsset:asset];
-    
-    if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:didDeselectAsset:)])
-        [self.picker.delegate assetsPickerController:self.picker didDeselectAsset:asset];
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath
@@ -408,5 +400,20 @@ NSString * const CTAssetsSupplementaryViewIdentifier = @"CTAssetsSupplementaryVi
         [self.picker.delegate assetsPickerController:self.picker didUnhighlightAsset:asset];
 }
 
+#pragma mark - <CTAssetsViewCellDelegate>
+
+- (void)assetsViewCell:(CTAssetsViewCell *)assetsViewCell didSelectAsset:(ALAsset *)asset {
+    [self.picker selectAsset:asset];
+    
+    if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:didSelectAsset:)])
+        [self.picker.delegate assetsPickerController:self.picker didSelectAsset:asset];
+}
+
+- (void)assetsViewCell:(CTAssetsViewCell *)assetsViewCell didDeselectAsset:(ALAsset *)asset {    
+    [self.picker deselectAsset:asset];
+    
+    if ([self.picker.delegate respondsToSelector:@selector(assetsPickerController:didDeselectAsset:)])
+        [self.picker.delegate assetsPickerController:self.picker didDeselectAsset:asset];
+}
 
 @end

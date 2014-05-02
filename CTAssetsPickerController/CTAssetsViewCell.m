@@ -37,6 +37,8 @@
 @property (nonatomic, copy) NSString *type;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, strong) UIImage *videoImage;
+@property (nonatomic, strong) UIButton *checkedIcon;
+@property (nonatomic, strong) UIButton *uncheckedIcon;
 
 @end
 
@@ -50,7 +52,6 @@ static UIFont *titleFont;
 static CGFloat titleHeight;
 static UIImage *videoIcon;
 static UIColor *titleColor;
-static UIImage *checkedIcon;
 static UIColor *selectedColor;
 static UIColor *disabledColor;
 
@@ -60,7 +61,6 @@ static UIColor *disabledColor;
     titleHeight     = 20.0f;
     videoIcon       = [UIImage imageNamed:@"CTAssetsPickerVideo"];
     titleColor      = [UIColor whiteColor];
-    checkedIcon     = [UIImage imageNamed:@"CTAssetsPickerChecked"];
     selectedColor   = [UIColor colorWithWhite:1 alpha:0.3];
     disabledColor   = [UIColor colorWithWhite:1 alpha:0.9];
 }
@@ -73,6 +73,26 @@ static UIColor *disabledColor;
         self.isAccessibilityElement = YES;
         self.accessibilityTraits    = UIAccessibilityTraitImage;
         self.enabled                = YES;
+        
+        CGFloat width = self.contentView.frame.size.width;
+        CGFloat iconWidth = 31;
+        
+        self.checkedIcon = [[UIButton alloc] initWithFrame:CGRectMake(width - iconWidth, 0, iconWidth, iconWidth)];
+        [self.checkedIcon setImage:[UIImage imageNamed:@"CTAssetsPickerChecked"]
+                          forState:UIControlStateNormal];
+        [self.checkedIcon addTarget:self
+                             action:@selector(didTapCheckedIcon:)
+                   forControlEvents:UIControlEventTouchUpInside];
+        self.checkedIcon.hidden = YES;
+        [self.contentView addSubview:self.checkedIcon];
+        
+        self.uncheckedIcon = [[UIButton alloc] initWithFrame:CGRectMake(width - iconWidth, 0, iconWidth, iconWidth)];
+        [self.uncheckedIcon setImage:[UIImage imageNamed:@"CTAssetsPickerUnchecked"]
+                            forState:UIControlStateNormal];
+        [self.uncheckedIcon addTarget:self
+                               action:@selector(didTapUncheckedIcon:)
+                     forControlEvents:UIControlEventTouchUpInside];
+        [self.contentView addSubview:self.uncheckedIcon];
     }
     
     return self;
@@ -88,13 +108,6 @@ static UIColor *disabledColor;
         self.title = [NSDate timeDescriptionOfTimeInterval:[[asset valueForProperty:ALAssetPropertyDuration] doubleValue]];
 }
 
-- (void)setSelected:(BOOL)selected
-{
-    [super setSelected:selected];
-    [self setNeedsDisplay];
-}
-
-
 #pragma mark - Draw Rect
 
 - (void)drawRect:(CGRect)rect
@@ -103,14 +116,20 @@ static UIColor *disabledColor;
     
     [self drawThumbnailInRect:rect];
     
-    if ([self.type isEqual:ALAssetTypeVideo])
+    if ([self.type isEqual:ALAssetTypeVideo]) {
         [self drawVideoMetaInRect:rect];
+    }
     
-    if (!self.isEnabled)
+    if (!self.isEnabled) {
         [self drawDisabledViewInRect:rect];
-    
-    else if (self.selected)
+    } else if (self.selected) {
+        self.uncheckedIcon.hidden = YES;
+        self.checkedIcon.hidden = NO;
         [self drawSelectedViewInRect:rect];
+    } else {
+        self.uncheckedIcon.hidden = NO;
+        self.checkedIcon.hidden = YES;
+    }
 }
 
 - (void)drawThumbnailInRect:(CGRect)rect
@@ -169,8 +188,6 @@ static UIColor *disabledColor;
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, selectedColor.CGColor);
     CGContextFillRect(context, rect);
-    
-    [checkedIcon drawAtPoint:CGPointMake(CGRectGetMaxX(rect) - checkedIcon.size.width, CGRectGetMinY(rect))];
 }
 
 
@@ -214,5 +231,18 @@ static UIColor *disabledColor;
     return [df stringFromDate:date];
 }
 
+#pragma mark - Actions
+
+- (void)didTapUncheckedIcon:(id)sender {
+    [self.delegate assetsViewCell:self didSelectAsset:self.asset];
+    self.selected = YES;
+    [self setNeedsDisplay];
+}
+
+- (void)didTapCheckedIcon:(id)sender {
+    [self.delegate assetsViewCell:self didDeselectAsset:self.asset];
+    self.selected = NO;
+    [self setNeedsDisplay];
+}
 
 @end

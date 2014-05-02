@@ -27,10 +27,11 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "CTAssetsViewCell.h"
 
 
 
-@interface CTAssetsViewController : UICollectionViewController
+@interface CTAssetsViewController : UICollectionViewController<CTAssetsViewCellDelegate>
 
 @property (nonatomic, strong) ALAssetsGroup *assetsGroup;
 

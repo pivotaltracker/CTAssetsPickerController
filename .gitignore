@@ -1,0 +1,8 @@
+xcuserdata
+.bundle/ruby
+.DS_Store
+bin
+logs
+build
+Pods/
+*.xccheckout

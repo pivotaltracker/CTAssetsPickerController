@@ -28,12 +28,20 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-
+@protocol CTAssetsViewCellDelegate;
 
 @interface CTAssetsViewCell : UICollectionViewCell
 
+@property (weak, nonatomic) id<CTAssetsViewCellDelegate> delegate;
 @property (nonatomic, assign, getter = isEnabled) BOOL enabled;
 
 - (void)bind:(ALAsset *)asset;
+
+@end
+
+@protocol CTAssetsViewCellDelegate <NSObject>
+
+- (void)assetsViewCell:(CTAssetsViewCell *)assetsViewCell didSelectAsset:(ALAsset *)asset;
+- (void)assetsViewCell:(CTAssetsViewCell *)assetsViewCell didDeselectAsset:(ALAsset *)asset;
 
 @end

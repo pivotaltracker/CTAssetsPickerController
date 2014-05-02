@@ -195,7 +195,15 @@
  */
 - (void)assetsPickerController:(CTAssetsPickerController *)picker didDeselectAsset:(ALAsset *)asset;
 
-
+/**
+ *  Displays a view controller in a modal when the user taps the image.
+ *  If the delegate does not implement this method, no view controller will be shown.
+ *
+ *  @param picker  The controller object managing the assets picker interface.
+ *  @param asset   The asset that was tapped
+ */
+- (UIViewController *)assetsPickerController:(CTAssetsPickerController *)picker
+                      viewControllerForAsset:(ALAsset *)asset;
 
 /**
  *  @name Managing Asset Highlighting
