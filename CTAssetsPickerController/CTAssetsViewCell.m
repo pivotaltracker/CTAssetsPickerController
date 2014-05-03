@@ -106,6 +106,8 @@ static UIColor *disabledColor;
     
     if ([self.type isEqual:ALAssetTypeVideo])
         self.title = [NSDate timeDescriptionOfTimeInterval:[[asset valueForProperty:ALAssetPropertyDuration] doubleValue]];
+  
+    [self setNeedsDisplay];
 }
 
 #pragma mark - Draw Rect
