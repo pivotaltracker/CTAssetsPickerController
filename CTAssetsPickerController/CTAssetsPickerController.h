@@ -78,6 +78,13 @@
 - (void)selectAsset:(ALAsset *)asset;
 
 /**
+ *  Selects an asset with the URL in the picker.
+ *
+ *  @param assetURL The URL of the asset to be selected.
+ */
+- (void)selectAssetWithURL:(NSURL *)assetURL;
+
+/**
  *  Deselects an asset in the picker.
  *
  *  @param asset The asset to be deselected.

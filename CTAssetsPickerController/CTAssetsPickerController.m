@@ -182,6 +182,12 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
     [self removeObjectFromSelectedAssetsAtIndex:[self.selectedAssets indexOfObject:asset]];
 }
 
+- (void)selectAssetWithURL:(NSURL *)assetURL
+{
+  [self.assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+    [self insertObject:asset inSelectedAssetsAtIndex:self.countOfSelectedAssets];
+  } failureBlock:^(NSError *error) {}];
+}
 
 #pragma mark - Not Allowed / No Assets Views
 
