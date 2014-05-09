@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "image-checkbox-unselected.png"
+      "filename" : "CTAssetsPickerUnchecked.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "image-checkbox-unselected2x.png"
+      "filename" : "CTAssetsPickerUnchecked@2x.png"
     }
   ],
   "info" : {
